@@ -18,20 +18,27 @@ void test_push_reference(shared_ptr<HImg>& sp){
 
 void test_pop_reference(shared_ptr<HImg>& data){
     shared_ptr<HImg> sp = imagelist.front();
-    printf("after front, use cont=%d\n", sp.use_count()); 
+    printf("after front, use cont=%d\n", sp.use_count());
 //    imagelist.pop_front();
-  //  printf("after pop front, use count = %d\n", sp.use_count());  
+  //  printf("after pop front, use count = %d\n", sp.use_count());
    // sp.reset();
     sp = nullptr;
-    printf("[%d]after reset front, use count = %d\n", sp == nullptr, sp.use_count());  
+    printf("[%d]after reset front, use count = %d\n", sp == nullptr, sp.use_count());
 }
 
-int main() 
+static shared_ptr<HImg> g_sharedPtr;
+void test_global_reference(void){
+
+    g_sharedPtr = shared_ptr<HImg>( make_shared<HImg>() );
+}
+int main()
 {
     shared_ptr<HImg> img1( make_shared<HImg>() );
     shared_ptr<HImg> img2( make_shared<HImg>() );
+    g_sharedPtr = shared_ptr<HImg>( make_shared<HImg>() );
 
     printf("img1 use_count=%d\n", img1.use_count());
+    printf("global shared ptr use_count=%d\n", g_sharedPtr.use_count());
 
     test_push_reference(img1);
 
@@ -43,6 +50,18 @@ int main()
     imagelist.clear();
     printf("after clear : size = %d\n", imagelist.size());
 
+    test_global_reference();
+
+    printf("global shared ptr use_count=%d\n", g_sharedPtr.use_count());
+
+    if(g_sharedPtr != NULL)
+      printf("before release global shared ptr use_count=%d\n", g_sharedPtr.use_count());
+      g_sharedPtr.reset();
+      printf("after global shared ptr use_count=%d\n", g_sharedPtr.use_count());
+
+    if(g_sharedPtr == NULL){
+      printf("after release global shared ptr use_count=%d\n", g_sharedPtr.use_count());
+    }
     return 0;
-    
+
 }
